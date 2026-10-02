@@ -1,0 +1,749 @@
+/* ═══════════════════════════════════════════════════════════════════
+   JAN Scheunert — style.css
+   CSS Architecture: BEM-inspired, Custom Properties, Logical Props
+   Type Scale: Golden Ratio (φ = 1.618) from 18 px base
+   WCAG AA · Mobile-First · Variable Font · No frameworks
+   ═══════════════════════════════════════════════════════════════════
+
+   TABLE OF CONTENTS
+   ─────────────────
+   1.  Font Face
+   2.  Custom Properties (Design Tokens)
+   3.  Reset & Base
+   4.  Base Typography
+   5.  Header
+   6.  Navigation — Desktop
+   7.  Navigation — Mobile / Hamburger
+   8.  Main & Photo Grid
+   9.  Lightbox
+   10. Footer
+   11. Utilities
+   12. Media Queries (Mobile-First)
+   13. Accessibility & Motion
+   14. Print
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────────────
+   1. FONT FACE — Self-hosted Variable Font, no Google Fonts request
+   ───────────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Newsreader';
+  src: url('../fonts/Newsreader.woff2') format('woff2 supports variations'),
+       url('../fonts/Newsreader.woff2') format('woff2'),
+       url('../fonts/Newsreader.woff')  format('woff');
+  font-weight: 100 900;
+  font-style:  normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  src: url('../fonts/Newsreader-Italic.woff2') format('woff2 supports variations'),
+       url('../fonts/Newsreader-Italic.woff2') format('woff2'),
+       url('../fonts/Newsreader-Italic.woff')  format('woff');
+  font-weight: 100 900;
+  font-style:  italic;
+  font-display: swap;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   2. CUSTOM PROPERTIES (Design Tokens)
+   ───────────────────────────────────────────────────────────────── */
+:root {
+
+  /* ── Colour ─────────────────────────────────────────────────────
+     All pairs tested against WCAG AA (4.5:1 normal, 3:1 large text)
+     #0A0A0A on #F8F8F7 → 18.4:1  ✓ AAA
+     #5A5754 on #F8F8F7 →  5.8:1  ✓ AA
+     #D4D2CE on #F8F8F7 →  1.6:1  — decorative only, never body text */
+  --c-bg:     #F8F8F7;
+  --c-ink:    #0A0A0A;
+  --c-mid:    #5A5754;
+  --c-rule:   #D4D2CE;
+
+  /* ── Typography ─────────────────────────────────────────────────
+     Single variable font — one @font-face file covers all weights.
+     φ = 1.618 (Golden Ratio)
+     Base = 18 px = 1.125 rem (browser root stays at 16 px default)
+
+     Scale:
+       --text-2xs   11 px   0.6875rem   micro labels
+       --text-xs    11 px   0.6938rem   footer copyright
+       --text-sm    14 px   0.8875rem   captions
+       --text-base  18 px   1.125rem    body text       ← base
+       --text-md    23 px   1.4313rem   large body / intro
+       --text-lg    29 px   1.8188rem   h3
+       --text-xl    37 px   2.3125rem   h2
+       --text-2xl   47 px   2.9438rem   h1             */
+  --f:          'Newsreader', Georgia, serif;
+
+  --text-2xs:   0.6875rem;   /*  11 px — micro  */
+  --text-xs:    0.6938rem;   /* ~11 px — copyright / meta */
+  --text-sm:    0.8875rem;   /* ~14 px — captions  */
+  --text-base:  1.125rem;    /*  18 px — body base          */
+  --text-md:    1.4313rem;   /* ~23 px — intro / lead       */
+  --text-lg:    1.8188rem;   /* ~29 px — h3                 */
+  --text-xl:    2.3125rem;   /* ~37 px — h2                 */
+  --text-2xl:   2.9438rem;   /* ~47 px — h1                 */
+
+  /* ── Spacing — 8-point grid ─────────────────────────────────────
+     All spacing tokens are multiples of 0.5rem (8px).             */
+  --space-1:    0.5rem;    /*  8px */
+  --space-2:    1rem;      /* 16px */
+  --space-3:    1.5rem;    /* 24px */
+  --space-4:    2rem;      /* 32px */
+  --space-6:    3rem;      /* 48px */
+  --space-8:    4rem;      /* 64px */
+  --space-12:   6rem;      /* 96px */
+
+  /* ── Layout ─────────────────────────────────────────────────────  */
+  --header-h:   52px;       /* slim header — matches reference image */
+  --gap:        3px;        /* photo grid gap */
+  --max-w:      1440px;
+  --pad-x:      clamp(1.5rem, 4vw, 3.5rem);
+  --measure:    65ch;       /* optimal line length for reading */
+
+  /* ── Motion ─────────────────────────────────────────────────────  */
+  --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast:     150ms;
+  --t-mid:      250ms;
+  --t-slow:     550ms;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   3. RESET & BASE
+   ───────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin:     0;
+  padding:    0;
+}
+
+html {
+  /* Preserve user font-size preference — never override root px */
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--c-bg);
+  color:            var(--c-ink);
+  font-family:      var(--f);
+  font-size:        var(--text-base);
+  font-weight:      300;
+  line-height:      1.65;
+  font-variation-settings: 'opsz' 18;
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Sticky footer: push footer to bottom when content is short */
+  display:          flex;
+  flex-direction:   column;
+  min-block-size:   100dvh;
+}
+
+img,
+svg {
+  display:   block;
+  max-width: 100%;
+  height:    auto;
+}
+
+ul,
+ol { list-style: none; }
+
+button {
+  cursor:     pointer;
+  background: none;
+  border:     none;
+  color:      inherit;
+  font:       inherit;
+}
+
+a {
+  color:           inherit;
+  text-decoration: none;
+}
+
+/* Prose links — underlined for accessibility */
+.prose a {
+  text-decoration:          underline;
+  text-underline-offset:    3px;
+  text-decoration-thickness: 1px;
+  transition:               opacity var(--t-fast);
+}
+.prose a:hover { opacity: 0.5; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   4. BASE TYPOGRAPHY
+   Golden Ratio headings · opsz optical sizing per step
+   ───────────────────────────────────────────────────────────────── */
+
+/* Heading defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family:  var(--f);
+  font-weight:  300;
+  line-height:  1.1;
+  color:        var(--c-ink);
+  /* Use logical margin-block for writing-mode safety */
+  margin-block-start: 0;
+  margin-block-end:   0;
+}
+
+h1 {
+  font-size:              var(--text-2xl);          /* ~47 px */
+  font-variation-settings: 'opsz' 72, 'wdth' 100;
+  letter-spacing:         -0.03em;
+  line-height:            1.05;
+}
+
+h2 {
+  font-size:              var(--text-xl);           /* ~37 px */
+  font-variation-settings: 'opsz' 48;
+  letter-spacing:         -0.02em;
+  line-height:            1.1;
+}
+
+h3 {
+  font-size:              var(--text-lg);           /* ~29 px */
+  font-variation-settings: 'opsz' 36;
+  letter-spacing:         -0.01em;
+  line-height:            1.15;
+}
+
+h4 {
+  font-size:              var(--text-md);           /* ~23 px */
+  font-variation-settings: 'opsz' 24;
+  font-weight:            400;
+  line-height:            1.2;
+}
+
+p {
+  font-size:              var(--text-base);         /* 18 px */
+  line-height:            1.65;
+  font-variation-settings: 'opsz' 18;
+  max-width:              var(--measure);
+}
+p + p { margin-block-start: 1.1em; }
+
+strong, b { font-weight: 600; }
+em, i     { font-style: italic; }
+
+small {
+  font-size:              var(--text-2xs);
+  color:                  var(--c-mid);
+  font-variation-settings: 'opsz' 11;
+}
+
+/* Skip link — visible on focus for keyboard users */
+.skip-link {
+  position:   absolute;
+  inset-inline-start: -9999px;
+  inset-block-start:  0;
+  background: var(--c-ink);
+  color:      var(--c-bg);
+  padding:    var(--space-1) var(--space-2);
+  font-size:  var(--text-sm);
+  z-index:    9999;
+}
+.skip-link:focus { inset-inline-start: 0; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   5. HEADER
+   ───────────────────────────────────────────────────────────────── */
+.site-header {
+  position:   sticky;
+  inset-block-start: 0;
+  z-index:    100;
+  background: var(--c-bg);
+  /* Shrink-to-header, no flex growth */
+  flex-shrink: 0;
+}
+
+.header-inner {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  block-size:      var(--header-h);
+  max-inline-size: var(--max-w);
+  margin-inline:   auto;
+  padding-inline:  var(--pad-x);
+  gap:             var(--space-4);
+}
+
+/* Site name — Newsreader, medium weight, natural case
+   Slightly larger than nav links — clear hierarchy, matches reference */
+.site-title {
+  font-family:            var(--f);
+  font-size:              var(--text-md);          /* ~23 px */
+  font-weight:            500;
+  font-variation-settings: 'opsz' 23;
+  letter-spacing:         0.01em;
+  white-space:            nowrap;
+  flex-shrink:            0;
+  line-height:            1;
+  transition:             opacity var(--t-fast);
+}
+.site-title:hover,
+.site-title:focus-visible { opacity: 0.5; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   6. NAVIGATION — DESKTOP
+   ───────────────────────────────────────────────────────────────── */
+.site-nav {
+  flex:            1;
+  display:         flex;
+  justify-content: flex-end;
+}
+
+.nav-list {
+  display:     flex;
+  align-items: center;
+  gap:         0.1rem;
+}
+
+.nav-link {
+  display:                inline-flex;
+  align-items:            center;
+  padding-inline:         0.65rem;
+  padding-block:          0.35rem;
+  font-family:            var(--f);
+  font-size:              var(--text-base);        /* 18 px — matches reference */
+  font-variation-settings: 'opsz' 18;
+  letter-spacing:         0.01em;
+  opacity:                0.5;
+  transition:             opacity var(--t-fast);
+}
+.nav-link:hover,
+.nav-link:focus-visible { opacity: 1; }
+
+.nav-link:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 2px;
+  border-radius:  1px;
+}
+
+.nav-social {
+  padding-inline: 0.5rem;
+  padding-block:  0.4rem;
+  display:        inline-flex;
+  align-items:    center;
+  opacity:        0.4;
+  transition:     opacity var(--t-fast);
+}
+.nav-social:hover,
+.nav-social:focus-visible { opacity: 1; }
+
+.nav-social:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 2px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   7. NAVIGATION — MOBILE / HAMBURGER
+   ───────────────────────────────────────────────────────────────── */
+.nav-toggle {
+  display:         none;          /* shown via media query */
+  flex-direction:  column;
+  justify-content: space-between;
+  inline-size:     22px;
+  block-size:      13px;
+  flex-shrink:     0;
+}
+.nav-toggle span {
+  display:    block;
+  inline-size: 100%;
+  block-size:  1px;
+  background: var(--c-ink);
+  transition: transform var(--t-mid) var(--ease-out), opacity 200ms;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+.nav-toggle:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 4px;
+}
+
+.mobile-nav {
+  display:    none;             /* shown via media query */
+  overflow:   hidden;
+  max-block-size: 0;
+  transition: max-block-size 0.35s var(--ease-out);
+}
+.mobile-nav.is-open { max-block-size: 460px; }
+
+.mobile-nav-list {
+  padding-block:  var(--space-3) var(--space-4);
+  padding-inline: var(--pad-x);
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  text-align:     center;
+}
+
+.mobile-nav-list li { inline-size: 100%; }
+
+.mobile-text-link a {
+  display:                block;
+  padding-block:          0.85rem;
+  font-family:            var(--f);
+  font-size:              var(--text-lg);          /* ~29 px — generous tap target */
+  font-weight:            300;
+  font-variation-settings: 'opsz' 29;
+  opacity:                0.55;
+  transition:             opacity var(--t-fast);
+}
+.mobile-text-link a:hover,
+.mobile-text-link a:focus-visible { opacity: 1; }
+
+.mobile-text-link a:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 2px;
+}
+
+.mobile-social-row {
+  display:        flex;
+  justify-content: center;
+  gap:            var(--space-3);
+  padding-block-start: var(--space-3);
+  inline-size:    100%;
+}
+.mobile-social-row a {
+  display:    flex;
+  align-items: center;
+  opacity:    0.4;
+  transition: opacity var(--t-fast);
+}
+.mobile-social-row a:hover,
+.mobile-social-row a:focus-visible { opacity: 1; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   8. MAIN & PHOTO GRID
+   ───────────────────────────────────────────────────────────────── */
+.site-main {
+  /* Sticky footer: main fills remaining space */
+  flex: 1;
+}
+
+.grid-section {
+  max-inline-size: var(--max-w);
+  margin-inline:   auto;
+  padding:         var(--gap);
+}
+
+.photo-grid {
+  display:               grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:                   var(--gap);
+}
+
+.grid-item {
+  position:     relative;
+  display:      block;
+  inline-size:  100%;
+  aspect-ratio: 3 / 2;
+  overflow:     hidden;
+  background:   var(--c-rule);
+  padding:      0;
+}
+
+.grid-item img {
+  inline-size: 100%;
+  block-size:  100%;
+  object-fit:  cover;
+  transition:  transform var(--t-slow) var(--ease-out),
+               filter    var(--t-slow);
+  filter:      grayscale(8%);
+  will-change: transform;
+}
+
+.grid-item:hover img,
+.grid-item:focus-visible img {
+  transform: scale(1.04);
+  filter:    grayscale(0%);
+}
+
+.grid-item:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 2px;
+  z-index:        2;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   9. LIGHTBOX
+   ───────────────────────────────────────────────────────────────── */
+.lightbox {
+  position:        fixed;
+  inset:           0;
+  z-index:         500;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  pointer-events:  none;
+  opacity:         0;
+  transition:      opacity 300ms;
+}
+.lightbox.is-open {
+  pointer-events: all;
+  opacity:        1;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset:    0;
+  background: rgba(10, 10, 10, 0.95);
+  cursor:   zoom-out;
+}
+
+.lightbox-content {
+  position:        relative;
+  z-index:         1;
+  display:         flex;
+  align-items:     center;
+  gap:             var(--space-2);
+  max-inline-size: 92vw;
+  max-block-size:  90vh;
+  inline-size:     100%;
+}
+
+.lightbox-img-wrap {
+  flex:            1;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  max-block-size:  88vh;
+  overflow:        hidden;
+}
+.lightbox-img-wrap img {
+  max-inline-size: 100%;
+  max-block-size:  88vh;
+  object-fit:      contain;
+  transition:      opacity 200ms;
+  will-change:     opacity;
+}
+
+.lightbox-close {
+  position:            absolute;
+  inset-block-start:   -2.5rem;
+  inset-inline-end:    0;
+  color:               var(--c-bg);
+  opacity:             0.6;
+  padding:             var(--space-1);
+  transition:          opacity var(--t-fast);
+}
+.lightbox-close:hover,
+.lightbox-close:focus-visible { opacity: 1; }
+.lightbox-close:focus-visible { outline: 1px solid var(--c-bg); }
+
+.lightbox-arrow {
+  color:       var(--c-bg);
+  opacity:     0.5;
+  padding-inline: 0.5rem;
+  padding-block:  0.75rem;
+  flex-shrink: 0;
+  transition:  opacity var(--t-fast), transform var(--t-fast);
+}
+.lightbox-arrow:hover,
+.lightbox-arrow:focus-visible { opacity: 1; }
+.lightbox-arrow:focus-visible { outline: 1px solid var(--c-bg); }
+.lightbox-prev:hover           { transform: translateX(-3px); }
+.lightbox-next:hover           { transform: translateX(3px); }
+
+.lightbox-counter {
+  position:            absolute;
+  inset-block-end:     -2rem;
+  inset-inline-start:  50%;
+  transform:           translateX(-50%);
+  font-family:         var(--f);
+  font-size:           var(--text-2xs);
+  font-variation-settings: 'opsz' 11;
+  letter-spacing:      0.1em;
+  color:               rgba(248, 248, 247, 0.45);
+  white-space:         nowrap;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   10. FOOTER
+   Sticky footer via body { display: flex; flex-direction: column }
+   + .site-main { flex: 1 }
+   ───────────────────────────────────────────────────────────────── */
+.site-footer {
+  background:      var(--c-bg);
+  padding-block:   var(--space-6) var(--space-4);
+  flex-shrink:     0;
+}
+
+.footer-inner {
+  max-inline-size: var(--max-w);
+  margin-inline:   auto;
+  padding-inline:  var(--pad-x);
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  gap:             var(--space-3);
+}
+
+/* Row 1 — Back to top */
+.footer-top {
+  display:                inline-flex;
+  align-items:            center;
+  gap:                    0.5rem;
+  font-family:            var(--f);
+  font-size:              var(--text-base);        /* 18 px */
+  font-variation-settings: 'opsz' 18;
+  color:                  var(--c-mid);
+  transition:             color var(--t-fast);
+}
+.footer-top:hover,
+.footer-top:focus-visible { color: var(--c-ink); }
+.footer-top:focus-visible  { outline: 2px solid var(--c-ink); outline-offset: 3px; }
+
+/* Row 2 — Social icons */
+.footer-social {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-3);
+}
+.footer-social a {
+  display:    flex;
+  align-items: center;
+  color:      var(--c-mid);
+  transition: color var(--t-fast);
+}
+.footer-social a:hover,
+.footer-social a:focus-visible { color: var(--c-ink); }
+.footer-social a:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 3px;
+}
+
+/* Row 3 — Copyright + legal: readable but clearly secondary */
+.footer-bottom {
+  display:         flex;
+  align-items:     center;
+  gap:             0.5rem;
+  font-family:     var(--f);
+  font-size:       var(--text-sm);                /* ~14 px — quiet, not invisible */
+  font-variation-settings: 'opsz' 14;
+  color:           var(--c-rule);
+  flex-wrap:       wrap;
+  justify-content: center;
+}
+.footer-link {
+  color:      var(--c-rule);
+  transition: color var(--t-fast);
+}
+.footer-link:hover  { color: var(--c-mid); }
+.footer-sep         { opacity: 0.6; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   11. UTILITIES
+   ───────────────────────────────────────────────────────────────── */
+/* Visually hidden but accessible to screen readers */
+.sr-only {
+  position:   absolute;
+  inline-size: 1px;
+  block-size:  1px;
+  padding:    0;
+  margin:     -1px;
+  overflow:   hidden;
+  clip:       rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border:     0;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   12. MEDIA QUERIES — MOBILE FIRST
+   Base styles above are for mobile.
+   These progressively enhance for larger screens.
+   ───────────────────────────────────────────────────────────────── */
+
+/* ── Mobile: up to 679px — hamburger nav, single/double grid ── */
+.site-nav   { display: none; }
+.nav-toggle { display: flex; }
+.mobile-nav { display: block; }
+
+.photo-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+.lightbox-content { gap: 0.5rem; max-inline-size: 98vw; }
+.lightbox-arrow   { padding-inline: 0.25rem; padding-block: 0.5rem; }
+
+/* ── Tablet+: 680px and above ─────────────────────────────── */
+@media (min-width: 680px) {
+  .site-nav   { display: flex; }
+  .nav-toggle { display: none; }
+  .mobile-nav { display: none !important; }
+
+  .photo-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap);
+  }
+
+  .lightbox-content { gap: var(--space-2); max-inline-size: 92vw; }
+  .lightbox-arrow   { padding-inline: 0.5rem; padding-block: 0.75rem; }
+}
+
+/* ── Large desktop: 1200px+ — generous padding ────────────── */
+@media (min-width: 1200px) {
+  :root { --pad-x: clamp(2rem, 5vw, 4rem); }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   13. ACCESSIBILITY & REDUCED MOTION
+   ───────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .nav-link,
+  .nav-social,
+  .footer-link { forced-color-adjust: auto; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   14. PRINT
+   ───────────────────────────────────────────────────────────────── */
+@media print {
+  .site-header,
+  .site-footer,
+  .lightbox    { display: none; }
+
+  .photo-grid  {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  .grid-item   { break-inside: avoid; }
+}

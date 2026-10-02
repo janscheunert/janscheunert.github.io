@@ -1,0 +1,268 @@
+/* ═══════════════════════════════════════════════════════════════════
+   JAN Scheunert — pages.css
+   Inner pages: About · Contact · Legal · Portfolio
+   Inherits all tokens from style.css
+
+   TABLE OF CONTENTS
+   ─────────────────
+   1.  Nav active state
+   2.  Page shell
+   3.  Page headings
+   4.  Body copy & prose
+   5.  Contact form
+   6.  Legal prose
+   7.  Responsive
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────────────
+   1. NAV ACTIVE STATE
+   ───────────────────────────────────────────────────────────────── */
+.nav-active {
+  opacity:                  1 !important;
+  text-decoration:          underline;
+  text-underline-offset:    3px;
+  text-decoration-thickness: 1px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   2. PAGE SHELL
+   Constrained reading column — max 65ch keeps lines ≤75 chars
+   ───────────────────────────────────────────────────────────────── */
+.page-main {
+  padding-block: var(--space-8) var(--space-12);
+  /* Inherited flex:1 from .site-main ensures sticky footer */
+}
+
+.page-inner {
+  max-inline-size: 680px;
+  margin-inline:   auto;
+  padding-inline:  clamp(1.5rem, 6vw, 4rem);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   3. PAGE HEADINGS
+   Tuned opsz values per size for optical correctness
+   ───────────────────────────────────────────────────────────────── */
+
+/* H1: editorial statement — φ² from base = ~47 px */
+.page-inner h1 {
+  font-size:              var(--text-2xl);
+  font-weight:            300;
+  font-variation-settings: 'opsz' 72;
+  letter-spacing:         -0.03em;
+  line-height:            1.05;
+  margin-block-end:       var(--space-6);
+}
+
+/* H2: section title — ~37 px */
+.page-inner h2 {
+  font-size:              var(--text-xl);
+  font-weight:            300;
+  font-variation-settings: 'opsz' 48;
+  letter-spacing:         -0.02em;
+  line-height:            1.1;
+  margin-block-start:     var(--space-6);
+  margin-block-end:       var(--space-2);
+}
+
+/* H3: sub-section — ~29 px */
+.page-inner h3 {
+  font-size:              var(--text-lg);
+  font-weight:            400;
+  font-variation-settings: 'opsz' 36;
+  letter-spacing:         -0.01em;
+  line-height:            1.2;
+  margin-block-start:     var(--space-4);
+  margin-block-end:       var(--space-1);
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   4. BODY COPY & PROSE
+   ───────────────────────────────────────────────────────────────── */
+.page-body {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-4);
+}
+
+/* Primary prose: slightly larger than body base for comfortable reading */
+.page-col p {
+  font-size:              var(--text-md);          /* ~23 px */
+  line-height:            1.7;
+  font-weight:            300;
+  font-variation-settings: 'opsz' 23;
+  max-width:              var(--measure);
+}
+
+/* Secondary / metadata — muted, base size */
+.page-col--secondary p {
+  font-size:              var(--text-base);        /* 18 px */
+  color:                  var(--c-mid);
+  line-height:            1.65;
+  font-weight:            300;
+  font-variation-settings: 'opsz' 18;
+}
+
+/* Underlined prose links — override bare a reset */
+.page-inner a {
+  text-decoration:          underline;
+  text-underline-offset:    3px;
+  text-decoration-thickness: 1px;
+  transition:               opacity var(--t-fast);
+}
+.page-inner a:hover,
+.page-inner a:focus-visible { opacity: 0.5; }
+.page-inner a:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 2px;
+  border-radius:  1px;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   5. CONTACT FORM
+   ───────────────────────────────────────────────────────────────── */
+.contact-intro {
+  font-size:              var(--text-md);          /* ~23 px */
+  line-height:            1.7;
+  font-weight:            300;
+  font-variation-settings: 'opsz' 23;
+  margin-block-end:       var(--space-6);
+  max-width:              var(--measure);
+}
+
+.contact-form {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-4);
+}
+
+.form-row {
+  display:        flex;
+  flex-direction: column;
+  gap:            0.55rem;
+}
+
+/* Label — uppercase micro text, Newsreader at small opsz */
+.form-label {
+  font-family:            var(--f);
+  font-size:              var(--text-2xs);         /* 11 px */
+  font-weight:            400;
+  font-variation-settings: 'opsz' 11;
+  letter-spacing:         0.1em;
+  text-transform:         uppercase;
+  color:                  var(--c-mid);
+}
+
+/* Input — Newsreader, base size, minimal border-bottom */
+.form-input {
+  font-family:            var(--f);
+  font-size:              var(--text-base);        /* 18 px */
+  font-weight:            300;
+  font-variation-settings: 'opsz' 18;
+  color:                  var(--c-ink);
+  background:             transparent;
+  border:                 none;
+  border-block-end:       1px solid var(--c-rule);
+  padding-block:          0.65rem;
+  padding-inline:         0;
+  inline-size:            100%;
+  outline:                none;
+  transition:             border-color var(--t-fast), box-shadow var(--t-fast);
+  -webkit-appearance:     none;
+  border-radius:          0;
+}
+.form-input::placeholder {
+  color:                  var(--c-rule);
+  font-variation-settings: 'opsz' 18;
+}
+.form-input:focus {
+  border-block-end-color: var(--c-ink);
+  box-shadow:             0 1px 0 var(--c-ink);
+}
+
+.form-textarea {
+  resize:       vertical;
+  min-block-size: 150px;
+  line-height:  1.65;
+}
+
+.form-row--submit {
+  flex-direction: row;
+  align-items:    center;
+  gap:            var(--space-3);
+  flex-wrap:      wrap;
+  padding-block-start: var(--space-1);
+}
+
+/* Submit button — Newsreader, dark fill */
+.form-submit {
+  font-family:            var(--f);
+  font-size:              var(--text-base);        /* 18 px */
+  font-weight:            400;
+  font-variation-settings: 'opsz' 18;
+  letter-spacing:         0.01em;
+  background:             var(--c-ink);
+  color:                  var(--c-bg);
+  padding-block:          0.85rem;
+  padding-inline:         2.25rem;
+  border:                 none;
+  cursor:                 pointer;
+  transition:             opacity var(--t-fast);
+}
+.form-submit:hover  { opacity: 0.72; }
+.form-submit:focus-visible {
+  outline:        2px solid var(--c-ink);
+  outline-offset: 3px;
+}
+
+/* Inline status feedback */
+.form-status {
+  font-family:            var(--f);
+  font-size:              var(--text-sm);
+  font-variation-settings: 'opsz' 14;
+  color:                  var(--c-mid);
+  min-block-size:         1.4em;
+}
+.form-status.success { color: #2d6a4f; }
+.form-status.error   { color: #9b2226; }
+
+
+/* ─────────────────────────────────────────────────────────────────
+   6. LEGAL PROSE (AGB, Impressum, Datenschutz)
+   ───────────────────────────────────────────────────────────────── */
+.legal-body p {
+  font-size:              var(--text-base);        /* 18 px */
+  line-height:            1.75;
+  font-variation-settings: 'opsz' 18;
+  max-width:              var(--measure);
+}
+
+.legal-body p + p {
+  margin-block-start: 0.9em;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────
+   7. RESPONSIVE — MOBILE FIRST
+   ───────────────────────────────────────────────────────────────── */
+
+/* Mobile base (no @media needed — already mobile-first) */
+.page-main      { padding-block: var(--space-4) var(--space-8); }
+.page-inner h1  { font-size: var(--text-xl); margin-block-end: var(--space-4); }
+.page-col p     { font-size: var(--text-base); }
+.contact-intro  { font-size: var(--text-base); margin-block-end: var(--space-4); }
+.form-row--submit { flex-direction: column; align-items: flex-start; }
+
+/* Tablet+ */
+@media (min-width: 680px) {
+  .page-main     { padding-block: var(--space-8) var(--space-12); }
+  .page-inner h1 { font-size: var(--text-2xl); margin-block-end: var(--space-6); }
+  .page-col p    { font-size: var(--text-md); }
+  .contact-intro { font-size: var(--text-md); margin-block-end: var(--space-6); }
+  .form-row--submit { flex-direction: row; align-items: center; }
+}
